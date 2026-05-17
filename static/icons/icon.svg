@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Cartographer">
+  <rect width="512" height="512" rx="96" fill="#172B4D"/>
+  <!-- A surveyed trail: waypoints joined by a dashed path, not a compass or map. -->
+  <path d="M120 372 C 196 300, 196 300, 256 256 S 316 156, 392 140"
+        fill="none" stroke="#4C9AFF" stroke-width="20" stroke-linecap="round"
+        stroke-dasharray="2 44"/>
+  <path d="M120 372 C 196 300, 196 300, 256 256 S 316 156, 392 140"
+        fill="none" stroke="#4C9AFF" stroke-width="6" stroke-linecap="round"
+        opacity="0.5"/>
+  <g fill="#FFFFFF">
+    <circle cx="120" cy="372" r="30"/>
+    <circle cx="256" cy="256" r="24"/>
+    <circle cx="392" cy="140" r="34"/>
+  </g>
+  <g fill="#172B4D">
+    <circle cx="120" cy="372" r="12"/>
+    <circle cx="256" cy="256" r="9"/>
+    <circle cx="392" cy="140" r="14"/>
+  </g>
+</svg>

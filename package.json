@@ -1,0 +1,39 @@
+{
+  "name": "cartographer-for-atlassian",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scan ColdFusion code. Get a BoxLang migration backlog in Jira and Confluence.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate:manifest": "node scripts/validate-manifest.mjs",
+    "verify": "npm run typecheck && npm run test && npm run validate:manifest"
+  },
+  "dependencies": {
+    "@forge/api": "^7.2.0",
+    "@forge/bridge": "^5.16.1",
+    "@forge/events": "^2.1.5",
+    "@forge/kvs": "^1.6.3",
+    "@forge/os": "^2.1.19",
+    "@forge/react": "^11.16.0",
+    "@forge/resolver": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-test-renderer": "^18.3.0",
+    "ajv": "^8.20.0",
+    "js-yaml": "^4.1.0",
+    "react": "^18.3.0",
+    "react-test-renderer": "^18.3.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.1.0"
+  }
+}

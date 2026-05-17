@@ -1,0 +1,10 @@
+node_modules/
+.npm-cache/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+manifest.local.yml
+.forge/
+dist/

@@ -1,0 +1,191 @@
+# Cartographer for Atlassian - Forge manifest.
+#
+# Verified against the live manifest reference 2026-05-17 (see DECISIONS.md):
+# - runtime nodejs24.x (22.x deprecated 2026-05-06)
+# - consumer uses `queue` + `function` (a function module key), not the
+#   deprecated resolver+method form
+# - UI Kit modules require `render: native`; a UI Kit `resources` path points
+#   at the entry source file, not a build directory
+# - Custom Entities live under `app.storage.entities`; <=20 entities,
+#   <=7 indexes/entity, <=50 attributes/entity, single-attribute partition and
+#   range keys (composite filters use derived `scanPhase`/`scanCategory`/
+#   `scanSeverity` attributes, see DECISIONS.md)
+# - `write:project:jira` dropped (app creates issues, not projects)
+
+app:
+  # Placeholder. Replaced by `forge register` (commit the rewritten value).
+  id: "ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000"
+  runtime:
+    name: nodejs24.x
+    memoryMB: 512
+  storage:
+    entities:
+      - name: scan
+        attributes:
+          scanId: { type: string }
+          projectId: { type: string }
+          status: { type: string }
+          sourceKind: { type: string }
+          objectKey: { type: string }
+          totalFiles: { type: integer }
+          processedFiles: { type: integer }
+          candidateCount: { type: integer }
+          workItemCount: { type: integer }
+          chunkTotal: { type: integer }
+          chunkDone: { type: integer }
+          createdAt: { type: integer }
+          finishedAt: { type: integer }
+          error: { type: string }
+        indexes:
+          - name: by-project
+            partition: [projectId]
+            range: [createdAt]
+          - name: by-status
+            partition: [status]
+            range: [createdAt]
+      - name: candidate
+        attributes:
+          candidateId: { type: string }
+          scanId: { type: string }
+          ruleId: { type: string }
+          filePath: { type: string }
+          lineStart: { type: integer }
+          lineEnd: { type: integer }
+          category: { type: string }
+          severity: { type: string }
+          confidence: { type: integer }
+          snippet: { type: string }
+          chunkIndex: { type: integer }
+          createdAt: { type: integer }
+        indexes:
+          - name: by-scan
+            partition: [scanId]
+            range: [createdAt]
+      - name: workitem
+        attributes:
+          workItemId: { type: string }
+          scanId: { type: string }
+          scanPhase: { type: string }
+          scanCategory: { type: string }
+          scanSeverity: { type: string }
+          title: { type: string }
+          category: { type: string }
+          severity: { type: string }
+          confidence: { type: integer }
+          priority: { type: string }
+          phase: { type: integer }
+          effortPoints: { type: integer }
+          occurrences: { type: integer }
+          filePath: { type: string }
+          ruleId: { type: string }
+          jiraIssueKey: { type: string }
+          confluencePageId: { type: string }
+          blocksMigration: { type: boolean }
+          createdAt: { type: integer }
+        indexes:
+          - name: by-scan
+            partition: [scanId]
+            range: [createdAt]
+          - name: by-scan-phase
+            partition: [scanPhase]
+            range: [severity]
+          - name: by-scan-category
+            partition: [scanCategory]
+            range: [confidence]
+          - name: by-scan-severity
+            partition: [scanSeverity]
+            range: [confidence]
+      - name: exportartifact
+        attributes:
+          artifactId: { type: string }
+          scanId: { type: string }
+          format: { type: string }
+          objectKey: { type: string }
+          sizeBytes: { type: integer }
+          createdAt: { type: integer }
+        indexes:
+          - name: by-scan
+            partition: [scanId]
+            range: [createdAt]
+      - name: chunkstate
+        attributes:
+          csKey: { type: string }
+          scanId: { type: string }
+          chunkIndex: { type: integer }
+          doneAt: { type: integer }
+        indexes:
+          - name: by-scan
+            partition: [scanId]
+            range: [chunkIndex]
+      - name: blobpart
+        attributes:
+          partKey: { type: string }
+          scanId: { type: string }
+          partIndex: { type: integer }
+          total: { type: integer }
+          data: { type: string }
+          createdAt: { type: integer }
+        indexes:
+          - name: by-scan
+            partition: [scanId]
+            range: [partIndex]
+
+modules:
+  jira:projectPage:
+    - key: cartographer-project-page
+      resource: main
+      render: native
+      resolver:
+        function: resolver-fn
+      title: Cartographer
+
+  jira:adminPage:
+    - key: cartographer-admin-page
+      resource: main
+      render: native
+      resolver:
+        function: resolver-fn
+      title: Cartographer Settings
+
+  confluence:spacePage:
+    - key: cartographer-space-page
+      resource: main
+      render: native
+      resolver:
+        function: resolver-fn
+      title: Cartographer Migration Plan
+
+  function:
+    - key: resolver-fn
+      handler: index.resolverHandler
+    - key: os-presign-fn
+      handler: index.osPresign
+    - key: scan-consumer-fn
+      handler: index.scanConsumer
+
+  consumer:
+    - key: scan-consumer
+      queue: scan-queue
+      function: scan-consumer-fn
+
+resources:
+  - key: main
+    path: src/frontend/index.tsx
+
+permissions:
+  scopes:
+    - storage:app
+    - read:project:jira
+    - read:issue:jira
+    - write:issue:jira
+    - read:issue-type:jira
+    - read:user:jira
+    - read:status:jira
+    - read:page:confluence
+    - write:page:confluence
+    - read:space:confluence
+  external:
+    fetch:
+      backend:
+        - address: "api.github.com"
+        - address: "api.bitbucket.org"
