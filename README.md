@@ -1,7 +1,5 @@
 # Cartographer for Atlassian
 
-<img width="450" height="450" alt="Cartographer" src="https://github.com/user-attachments/assets/cd617876-d97e-4cb9-a536-a89d09f889f8" />
-
 Scan ColdFusion code. Get a BoxLang migration backlog in Jira and Confluence.
 
 Cartographer is an Atlassian Forge app for Jira and Confluence Cloud. Point it
@@ -12,6 +10,9 @@ and bugs and a published Confluence migration plan.
 
 Cartographer does not transform code. v0.1 is read-only against the source
 tree, produces work items as data, and writes only into Atlassian.
+
+<img width="2100" height="900" alt="cartographer-github-ad-2100x900" src="https://github.com/user-attachments/assets/6f89bdb5-4650-4aab-9210-8a6117cfbd00" />
+
 
 ## What it does
 
